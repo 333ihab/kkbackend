@@ -32,6 +32,10 @@ const {
   globalErrorHandler,
 } = require("./middleware/errorHandler");
 
+const {
+  startWeeklyNewsletterJob,
+} = require("./jobs/weekly-newsletter.job");
+
 // ==========================================
 // APP
 // ==========================================
@@ -42,7 +46,7 @@ const app = express();
 app.disable("x-powered-by");
 
 console.log("=================================");
-console.log("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Starting KineticKult Backend...");
+console.log("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ Starting KineticKult Backend...");
 console.log("=================================");
 
 console.log("NODE_ENV:", process.env.NODE_ENV);
@@ -52,43 +56,43 @@ console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
 console.log(
   "SUPABASE_URL:",
   process.env.SUPABASE_URL
-    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
-    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
+    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
+    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
 );
 
 console.log(
   "SUPABASE_SERVICE_ROLE_KEY:",
   process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
-    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
+    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
+    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
 );
 
 console.log(
   "RESEND_API_KEY:",
   process.env.RESEND_API_KEY
-    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
-    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
+    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
+    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
 );
 
 console.log(
   "FROM_EMAIL:",
   process.env.FROM_EMAIL
-    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
-    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
+    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
+    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
 );
 
 console.log(
   "ADMIN_EMAIL:",
   process.env.ADMIN_EMAIL
-    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
-    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
+    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
+    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
 );
 
 console.log(
   "GEMINI_API_KEY:",
   process.env.GEMINI_API_KEY
-    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
-    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
+    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
+    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
 );
 
 // ==========================================
@@ -180,7 +184,7 @@ app.use(
 
 app.use((req, res, next) => {
   console.log(
-    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¥ ${req.method} ${req.originalUrl}`
+    `ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¥ ${req.method} ${req.originalUrl}`
   );
 
   next();
@@ -189,52 +193,112 @@ app.use((req, res, next) => {
 // ==========================================
 // CORS
 // ==========================================
+//
+// Production origins come from process.env.FRONTEND_URL
+// (set on Render to: FRONTEND_URL=https://kenetickult.com)
+//
+// FRONTEND_URL may contain a single URL or a comma-separated list:
+// FRONTEND_URL=https://kenetickult.com,https://www.kenetickult.com
+//
+// Origins are normalized (trailing slashes removed) and, for apex
+// domains, the "www." variant is allowed automatically so that
+// https://kenetickult.com and https://www.kenetickult.com both work.
+
+const normalizeOrigin = (value) =>
+  String(value || "")
+    .trim()
+    .replace(/\/+$/, "");
+
+const envFrontendOrigins = (process.env.FRONTEND_URL || "")
+  .split(",")
+  .map(normalizeOrigin)
+  .filter(Boolean);
 
 const allowedOrigins = [
+  // Local development only (never used for production matching
+  // unless NODE_ENV is development):
   "http://localhost:5173",
   "http://127.0.0.1:5173",
-  process.env.FRONTEND_URL,
+  ...envFrontendOrigins,
+  // Automatically allow the www variant of every configured origin
+  ...envFrontendOrigins.map(
+    (origin) =>
+      origin.startsWith("https://") && !origin.startsWith("https://www.")
+        ? origin.replace("https://", "https://www.")
+        : null
+  ),
 ]
   .filter(Boolean)
   .filter((value, index, arr) => arr.indexOf(value) === index);
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Requests such as Postman/server-side requests
-      // may not contain an Origin header.
-      if (!origin) {
-        return callback(null, true);
-      }
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Requests such as Postman/server-side/curl requests
+    // may not contain an Origin header.
+    if (!origin) {
+      return callback(null, true);
+    }
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+    if (allowedOrigins.includes(normalizeOrigin(origin))) {
+      return callback(null, true);
+    }
 
-      return callback(
-        new Error("Not allowed by CORS")
-      );
-    },
+    console.warn(
+      `[CORS] Blocked request from origin: ${origin}`
+    );
+    console.warn(
+      `[CORS] Allowed origins: ${allowedOrigins.join(", ")}`
+    );
 
-    credentials: true,
+    // Do NOT throw an error: throwing makes Express respond via the
+    // error handler WITHOUT any Access-Control-Allow-Origin header,
+    // which the browser reports as a CORS failure. Instead, reject
+    // cleanly with a proper 403 response that still goes through
+    // normal middleware flow.
+    return callback(null, false);
+  },
 
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "DELETE",
-      "OPTIONS",
-    ],
+  credentials: true,
 
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-    ],
+  methods: [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+  ],
 
-    maxAge: 86400,
-  })
-);
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+  ],
+
+  maxAge: 86400,
+};
+
+// Register CORS BEFORE all routes (this also handles OPTIONS
+// preflight requests automatically for every route).
+app.use(cors(corsOptions));
+
+// Explicit preflight fallback (Express 5-safe): guarantees every
+// OPTIONS request terminates with a 204 response carrying the
+// CORS headers set above, even if no route matches.
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  return next();
+});
+
+if (!envFrontendOrigins.length) {
+  console.warn(
+    "[CORS] WARNING: FRONTEND_URL is not set. " +
+      "Production origins will NOT be allowed. " +
+      "Set FRONTEND_URL=https://kenetickult.com on Render."
+  );
+}
 
 // ==========================================
 // BODY PARSERS
@@ -326,7 +390,7 @@ app.get("/", (req, res) => {
 // ==========================================
 
 console.log(
-  "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Registering AI newsletter routes"
+  "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Registering AI newsletter routes"
 );
 
 // ==========================================
@@ -368,7 +432,7 @@ app.use(
 // ==========================================
 
 console.log(
-  "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Registering waitlist routes"
+  "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Registering waitlist routes"
 );
 
 app.use(
@@ -389,29 +453,35 @@ app.use(globalErrorHandler);
 // START SERVER
 // ==========================================
 
+// ==========================================
+// SCHEDULED JOBS
+// ==========================================
+
+startWeeklyNewsletterJob();
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log("=================================");
 
   console.log(
-    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ KineticKult Backend running on port ${PORT}`
+    `ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ KineticKult Backend running on port ${PORT}`
   );
 
   console.log(
-    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â Local: http://localhost:${PORT}`
+    `ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Local: http://localhost:${PORT}`
   );
 
   console.log(
-    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â Security: Helmet enabled`
+    `ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Security: Helmet enabled`
   );
 
   console.log(
-    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂºÃƒâ€šÃ‚Â¡ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Rate limiting: enabled`
+    `ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂºÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¯ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Rate limiting: enabled`
   );
 
   console.log(
-    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â CORS origins: ${allowedOrigins.join(", ")}`
+    `ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â CORS origins: ${allowedOrigins.join(", ")}`
   );
 
   console.log("=================================");
