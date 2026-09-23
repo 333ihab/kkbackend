@@ -1,0 +1,30 @@
+◇ injected env (10) from .env // tip: ⌘ override existing { override: true }
+=================================
+🚀 Starting KineticKult Backend...
+=================================
+NODE_ENV: development
+PORT: 5000
+FRONTEND_URL: http://localhost:5173
+SUPABASE_URL: ✅ Loaded
+SUPABASE_SERVICE_ROLE_KEY: ✅ Loaded
+RESEND_API_KEY: ✅ Loaded
+FROM_EMAIL: ✅ Loaded
+ADMIN_EMAIL: ✅ Loaded
+GEMINI_API_KEY: ✅ Loaded
+✅ Registering AI newsletter routes
+✅ Registering waitlist routes
+=================================
+🚀 KineticKult Backend running on port 5000
+🌐 Local: http://localhost:5000
+🔐 Security: Helmet enabled
+🛡️ Rate limiting: enabled
+🌍 CORS origins: http://localhost:5173, http://127.0.0.1:5173, http://localhost:5173
+=================================
+📥 POST /api/waitlist
+[0mPOST /api/waitlist [33m409[0m 631.471 ms - 68[0m
+📥 POST /api/waitlist
+âœ… Waitlist entry saved: 25bdd2eb-f807-4fad-91ed-36d58d72be50
+Customer email sent
+Admin email sent
+âœ… Waitlist emails sent.
+[0mPOST /api/waitlist [32m201[0m 860.812 ms - 230[0m

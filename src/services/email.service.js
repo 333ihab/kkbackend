@@ -5,16 +5,17 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = process.env.FROM_EMAIL;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
+// Matches the website palette in kinetic-kult/src/styles/variables.css
 const COLORS = {
-  black: "#050505",
-  ink: "#101010",
-  charcoal: "#181818",
-  white: "#ffffff",
-  muted: "#b8b8b8",
-  soft: "#f4f1ea",
-  acid: "#d7ff2f",
-  coral: "#ff4f5e",
-  line: "#303030",
+  black: "#050505",   // --kk-black
+  ink: "#0a0a0a",     // near-black surface
+  charcoal: "#1a1a1a",// dark text on light bg
+  white: "#ffffff",   // --kk-white
+  muted: "#a3a3a3",   // --kk-gray
+  soft: "#f5f5f5",    // neutral light surface
+  acid: "#d90429",    // --kk-red (accents)
+  coral: "#d90429",   // --kk-red (highlights)
+  line: "#262626",    // dark border
 };
 
 const escapeHtml = (value) =>
@@ -52,16 +53,16 @@ const sendWaitlistEmails = async ({
     await resend.emails.send({
       from: FROM_EMAIL,
       to: [email],
-      subject: "You're in \u2014 KineticKult DROP 001",
+      subject: "You're in \u2014 KeneticKult DROP 001",
       html: `
         <!DOCTYPE html>
         <html>
-          <body style="margin: 0; padding: 0; background: ${COLORS.black}; color: ${COLORS.white}; font-family: Arial, Helvetica, sans-serif;">
+          <body style="margin: 0; padding: 0; background: ${COLORS.black}; color: ${COLORS.white}; font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;">
             <div style="max-width: 600px; margin: 0 auto; padding: 50px 25px;">
               <div style="height: 5px; background: ${COLORS.acid}; margin-bottom: 34px;"></div>
 
               <div style="font-size: 13px; font-weight: bold; letter-spacing: 4px; margin-bottom: 38px; color: ${COLORS.acid};">
-                KINETICKULT
+                KENETICKULT
               </div>
 
               <div style="display: inline-block; padding: 8px 10px; font-size: 11px; letter-spacing: 3px; color: ${COLORS.black}; background: ${COLORS.acid}; margin-bottom: 22px; font-weight: bold;">
@@ -78,7 +79,7 @@ const sendWaitlistEmails = async ({
               </p>
 
               <p style="margin: 0; font-size: 16px; line-height: 1.7; color: ${COLORS.muted};">
-                You're officially on the <strong style="color: ${COLORS.acid};">KineticKult DROP 001</strong> waitlist.
+                You're officially on the <strong style="color: ${COLORS.acid};">KeneticKult DROP 001</strong> waitlist.
               </p>
 
               <div style="margin: 35px 0; padding: 25px; background: ${COLORS.ink}; border: 1px solid ${COLORS.line}; border-left: 5px solid ${COLORS.coral};">
@@ -104,7 +105,7 @@ const sendWaitlistEmails = async ({
               </p>
 
               <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid ${COLORS.line}; font-size: 10px; letter-spacing: 3px; color: ${COLORS.coral};">
-                KINETICKULT
+                KENETICKULT
               </div>
             </div>
           </body>
@@ -118,22 +119,22 @@ const sendWaitlistEmails = async ({
     await resend.emails.send({
       from: FROM_EMAIL,
       to: [ADMIN_EMAIL],
-      subject: `New KineticKult DROP 001 Entry \u2014 ${name}`,
+      subject: `New KeneticKult DROP 001 Entry \u2014 ${name}`,
       html: `
         <!DOCTYPE html>
         <html>
-          <body style="margin: 0; padding: 40px; background: ${COLORS.soft}; color: ${COLORS.ink}; font-family: Arial, Helvetica, sans-serif;">
+          <body style="margin: 0; padding: 40px; background: ${COLORS.soft}; color: ${COLORS.ink}; font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;">
             <div style="max-width: 650px; margin: 0 auto; background: ${COLORS.white}; border-top: 6px solid ${COLORS.acid}; padding: 32px; border-bottom: 6px solid ${COLORS.coral};">
             <div style="font-size: 12px; font-weight: bold; letter-spacing: 4px; color: ${COLORS.black}; margin-bottom: 22px;">
-              KINETICKULT
+              KENETICKULT
             </div>
 
             <h1 style="margin-bottom: 10px; color: ${COLORS.black};">
-              New KineticKult DROP 001 Entry
+              New KeneticKult DROP 001 Entry
             </h1>
 
             <p style="color: ${COLORS.charcoal};">
-              A new customer has joined the KineticKult waitlist.
+              A new customer has joined the KeneticKult waitlist.
             </p>
 
             <hr style="margin: 30px 0; border: none; border-top: 1px solid ${COLORS.line};">

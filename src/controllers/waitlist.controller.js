@@ -182,7 +182,7 @@ const createWaitlist = async (req, res) => {
       });
 
     console.log(
-      "✅ Waitlist entry saved:",
+      "âœ… Waitlist entry saved:",
       waitlistEntry.id
     );
 
@@ -200,14 +200,14 @@ const createWaitlist = async (req, res) => {
       });
 
       console.log(
-        "✅ Waitlist emails sent."
+        "âœ… Waitlist emails sent."
       );
 
     } catch (emailError) {
       emailFailed = true;
 
       console.error(
-        "❌ Resend email error:"
+        "âŒ Resend email error:"
       );
 
       console.error(
@@ -253,12 +253,23 @@ const createWaitlist = async (req, res) => {
 
   } catch (error) {
 
+    // ==========================================
+    // DUPLICATE EMAIL (Postgres unique violation)
+    // ==========================================
+
+    if (error.code === "23505") {
+      return res.status(409).json({
+        success: false,
+        message: "This email is already on the waitlist.",
+      });
+    }
+
     console.error(
       "================================="
     );
 
     console.error(
-      "❌ WAITLIST ERROR"
+      "âŒ WAITLIST ERROR"
     );
 
     console.error(
