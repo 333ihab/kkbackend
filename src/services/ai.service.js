@@ -1,10 +1,23 @@
+const MAX_TOPIC_LENGTH = 200;
+
+// Strip HTML/script content from user-supplied topic before interpolation
+const sanitizeTopic = (value) => {
+  return String(value)
+    .replace(/[<>]/g, "")   // remove angle brackets (blocks tag injection)
+    .replace(/[\u0000-\u001F\u007F]/g, "") // strip control chars
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, MAX_TOPIC_LENGTH);
+};
+
 const generateNewsletter = async (topic) => {
+  const safeTopic = sanitizeTopic(topic);
   return `
   <html>
     <body style="font-family: Arial, sans-serif; max-width: 700px; margin: auto;">
       <h1>Kenetic Kult Weekly Newsletter</h1>
 
-      <h2>${topic}</h2>
+      <h2>${safeTopic}</h2>
 
       <p>
         Progress isn't built in a single workout. It's built through

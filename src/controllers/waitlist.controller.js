@@ -182,7 +182,7 @@ const createWaitlist = async (req, res) => {
       });
 
     console.log(
-      "âœ… Waitlist entry saved:",
+      "Ã¢Å“â€¦ Waitlist entry saved:",
       waitlistEntry.id
     );
 
@@ -196,18 +196,20 @@ const createWaitlist = async (req, res) => {
       await emailService.sendWaitlistEmails({
         name: cleanFullName,
         email: cleanEmail,
+        phone: cleanPhone,
+        address: cleanAddress,
         size: cleanSize,
       });
 
       console.log(
-        "âœ… Waitlist emails sent."
+        "Ã¢Å“â€¦ Waitlist emails sent."
       );
 
     } catch (emailError) {
       emailFailed = true;
 
       console.error(
-        "âŒ Resend email error:"
+        "Ã¢ÂÅ’ Resend email error:"
       );
 
       console.error(
@@ -269,7 +271,7 @@ const createWaitlist = async (req, res) => {
     );
 
     console.error(
-      "âŒ WAITLIST ERROR"
+      "Ã¢ÂÅ’ WAITLIST ERROR"
     );
 
     console.error(

@@ -20,6 +20,17 @@ dotenv.config();
 const newsletterAIRoutes = require("./routes/newsletterAI.routes");
 const newsletterRoutes = require("./routes/newsletter.routes");
 const waitlistRoutes = require("./routes/waitlist.routes");
+const {
+  validate,
+  waitlistSchema,
+  newsletterSchema,
+  newsletterAISchema,
+} = require("./middleware/validation");
+
+const {
+  notFoundHandler,
+  globalErrorHandler,
+} = require("./middleware/errorHandler");
 
 // ==========================================
 // APP
@@ -31,7 +42,7 @@ const app = express();
 app.disable("x-powered-by");
 
 console.log("=================================");
-console.log("🚀 Starting KineticKult Backend...");
+console.log("ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Starting KineticKult Backend...");
 console.log("=================================");
 
 console.log("NODE_ENV:", process.env.NODE_ENV);
@@ -41,43 +52,43 @@ console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
 console.log(
   "SUPABASE_URL:",
   process.env.SUPABASE_URL
-    ? "✅ Loaded"
-    : "❌ Missing"
+    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
+    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
 );
 
 console.log(
   "SUPABASE_SERVICE_ROLE_KEY:",
   process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? "✅ Loaded"
-    : "❌ Missing"
+    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
+    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
 );
 
 console.log(
   "RESEND_API_KEY:",
   process.env.RESEND_API_KEY
-    ? "✅ Loaded"
-    : "❌ Missing"
+    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
+    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
 );
 
 console.log(
   "FROM_EMAIL:",
   process.env.FROM_EMAIL
-    ? "✅ Loaded"
-    : "❌ Missing"
+    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
+    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
 );
 
 console.log(
   "ADMIN_EMAIL:",
   process.env.ADMIN_EMAIL
-    ? "✅ Loaded"
-    : "❌ Missing"
+    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
+    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
 );
 
 console.log(
   "GEMINI_API_KEY:",
   process.env.GEMINI_API_KEY
-    ? "✅ Loaded"
-    : "❌ Missing"
+    ? "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Loaded"
+    : "ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Missing"
 );
 
 // ==========================================
@@ -169,7 +180,7 @@ app.use(
 
 app.use((req, res, next) => {
   console.log(
-    `📥 ${req.method} ${req.originalUrl}`
+    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¥ ${req.method} ${req.originalUrl}`
   );
 
   next();
@@ -183,7 +194,9 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   process.env.FRONTEND_URL,
-].filter(Boolean);
+]
+  .filter(Boolean)
+  .filter((value, index, arr) => arr.indexOf(value) === index);
 
 app.use(
   cors({
@@ -313,16 +326,40 @@ app.get("/", (req, res) => {
 // ==========================================
 
 console.log(
-  "✅ Registering AI newsletter routes"
+  "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Registering AI newsletter routes"
 );
+
+// ==========================================
+// AI NEWSLETTER RATE LIMITER
+// (stricter: AI generation is expensive)
+// ==========================================
+
+const aiLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+
+  max: 20,
+
+  standardHeaders: true,
+
+  legacyHeaders: false,
+
+  message: {
+    success: false,
+    message:
+      "Too many newsletter generation requests. Please try again later.",
+  },
+});
 
 app.use(
   "/api/newsletter-ai",
+  aiLimiter,
+  validate(newsletterAISchema),
   newsletterAIRoutes
 );
 
 app.use(
   "/api/newsletter",
+  validate(newsletterSchema),
   newsletterRoutes
 );
 
@@ -331,97 +368,22 @@ app.use(
 // ==========================================
 
 console.log(
-  "✅ Registering waitlist routes"
+  "ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Registering waitlist routes"
 );
 
 app.use(
   "/api/waitlist",
   waitlistLimiter,
+  validate(waitlistSchema),
   waitlistRoutes
 );
 
 // ==========================================
-// 404 HANDLER
+// 404 + GLOBAL ERROR HANDLERS (middleware)
 // ==========================================
 
-app.use((req, res) => {
-  console.warn(
-    `⚠️ Route not found: ${req.method} ${req.originalUrl}`
-  );
-
-  res.status(404).json({
-    success: false,
-    message: "Route not found.",
-  });
-});
-
-// ==========================================
-// GLOBAL ERROR HANDLER
-// ==========================================
-
-app.use((err, req, res, next) => {
-  console.error(
-    "================================="
-  );
-
-  console.error(
-    "❌ GLOBAL ERROR"
-  );
-
-  console.error(
-    "Path:",
-    req.originalUrl
-  );
-
-  console.error(
-    "Method:",
-    req.method
-  );
-
-  console.error(
-    "Message:",
-    err.message
-  );
-
-  if (process.env.NODE_ENV !== "production") {
-    console.error(
-      "Stack:",
-      err.stack
-    );
-  }
-
-  console.error(
-    "================================="
-  );
-
-  // CORS error
-  if (
-    err.message ===
-    "Not allowed by CORS"
-  ) {
-    return res.status(403).json({
-      success: false,
-      message:
-        "Request blocked by CORS policy.",
-    });
-  }
-
-  // Never expose internal errors in production
-  const status =
-    err.status ||
-    err.statusCode ||
-    500;
-
-  return res.status(status).json({
-    success: false,
-
-    message:
-      process.env.NODE_ENV === "production"
-        ? "Internal server error."
-        : err.message ||
-          "Internal Server Error",
-  });
-});
+app.use(notFoundHandler);
+app.use(globalErrorHandler);
 
 // ==========================================
 // START SERVER
@@ -433,23 +395,23 @@ app.listen(PORT, () => {
   console.log("=================================");
 
   console.log(
-    `🚀 KineticKult Backend running on port ${PORT}`
+    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ KineticKult Backend running on port ${PORT}`
   );
 
   console.log(
-    `🌐 Local: http://localhost:${PORT}`
+    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â Local: http://localhost:${PORT}`
   );
 
   console.log(
-    `🔐 Security: Helmet enabled`
+    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â Security: Helmet enabled`
   );
 
   console.log(
-    `🛡️ Rate limiting: enabled`
+    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂºÃƒâ€šÃ‚Â¡ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â Rate limiting: enabled`
   );
 
   console.log(
-    `🌍 CORS origins: ${allowedOrigins.join(", ")}`
+    `ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â CORS origins: ${allowedOrigins.join(", ")}`
   );
 
   console.log("=================================");

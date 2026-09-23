@@ -43,10 +43,14 @@ const assertEmailSent = ({ data, error }, label) => {
 const sendWaitlistEmails = async ({
   name,
   email,
+  phone,
+  address,
   size,
 }) => {
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);
+  const safePhone = escapeHtml(phone);
+  const safeAddress = escapeHtml(address);
   const safeSize = escapeHtml(size);
 
   const customerEmail = assertEmailSent(
@@ -152,6 +156,16 @@ const sendWaitlistEmails = async ({
               <tr>
                 <td style="padding: 12px 0; font-weight: bold; color: ${COLORS.black};">Email</td>
                 <td style="padding: 12px 0;">${safeEmail}</td>
+              </tr>
+
+              <tr>
+                <td style="padding: 12px 0; font-weight: bold; color: ${COLORS.black};">Phone</td>
+                <td style="padding: 12px 0;">${safePhone}</td>
+              </tr>
+
+              <tr>
+                <td style="padding: 12px 0; font-weight: bold; color: ${COLORS.black}; vertical-align: top;">Delivery Address</td>
+                <td style="padding: 12px 0; vertical-align: top;">${safeAddress}</td>
               </tr>
 
               <tr>
