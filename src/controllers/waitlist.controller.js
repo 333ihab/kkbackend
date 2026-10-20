@@ -193,6 +193,20 @@ const createWaitlist = async (req, res) => {
     let emailFailed = false;
 
     try {
+      if (waitlistEntry.wasExisting) {
+        return res.status(200).json({
+          success: true,
+          message: "Successfully joined the waitlist.",
+          data: {
+            id: waitlistEntry.id,
+            name: waitlistEntry.name,
+            email: waitlistEntry.email,
+            size: waitlistEntry.size,
+            created_at: waitlistEntry.created_at,
+          },
+        });
+      }
+
       await emailService.sendWaitlistEmails({
         name: cleanFullName,
         email: cleanEmail,
@@ -255,6 +269,20 @@ const createWaitlist = async (req, res) => {
 
   } catch (error) {
 
+    if (error.status === 503 || error.name === "SupabaseUnavailableError") {
+      const cause = error.cause;
+      console.error("[waitlist] Supabase temporarily unavailable", {
+        name: cause?.name,
+        code: cause?.code || cause?.cause?.code,
+        status: cause?.status || cause?.statusCode,
+      });
+      res.set("Retry-After", "3");
+      return res.status(503).json({
+        success: false,
+        message: "Waitlist signups are temporarily unavailable. Please try again shortly.",
+      });
+    }
+
     // ==========================================
     // DUPLICATE EMAIL (Postgres unique violation)
     // ==========================================
@@ -274,25 +302,11 @@ const createWaitlist = async (req, res) => {
       "Ã¢ÂÅ’ WAITLIST ERROR"
     );
 
-    console.error(
-      "Message:",
-      error.message
-    );
-
-    console.error(
-      "Code:",
-      error.code
-    );
-
-    console.error(
-      "Details:",
-      error.details
-    );
-
-    console.error(
-      "Hint:",
-      error.hint
-    );
+    console.error("Waitlist database operation failed", {
+      name: error.name,
+      code: error.code,
+      status: error.status || error.statusCode,
+    });
 
     console.error(
       "================================="

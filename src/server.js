@@ -35,6 +35,7 @@ const {
 const {
   startWeeklyNewsletterJob,
 } = require("./jobs/weekly-newsletter.job");
+const waitlistService = require("./services/waitlist.service");
 
 // ==========================================
 // APP
@@ -45,57 +46,8 @@ const app = express();
 // Hide Express fingerprint
 app.disable("x-powered-by");
 
-console.log("=================================");
-console.log("ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â°ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ Starting KineticKult Backend...");
-console.log("=================================");
+console.log("KineticKult Backend starting.");
 
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("PORT:", process.env.PORT);
-console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
-
-console.log(
-  "SUPABASE_URL:",
-  process.env.SUPABASE_URL
-    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
-    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
-);
-
-console.log(
-  "SUPABASE_SERVICE_ROLE_KEY:",
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
-    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
-);
-
-console.log(
-  "RESEND_API_KEY:",
-  process.env.RESEND_API_KEY
-    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
-    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
-);
-
-console.log(
-  "FROM_EMAIL:",
-  process.env.FROM_EMAIL
-    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
-    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
-);
-
-console.log(
-  "ADMIN_EMAIL:",
-  process.env.ADMIN_EMAIL
-    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
-    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
-);
-
-console.log(
-  "GEMINI_API_KEY:",
-  process.env.GEMINI_API_KEY
-    ? "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ Loaded"
-    : "ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Missing"
-);
-
-// ==========================================
 // TRUST PROXY
 // ==========================================
 //
@@ -383,6 +335,26 @@ app.get("/", (req, res) => {
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });
+});
+
+// Keep liveness independent of Supabase so Render checks don't generate DB traffic.
+app.get("/health", (req, res) => {
+  res.status(200).json({ application: "available" });
+});
+
+// On-demand diagnostic only; do not poll frequently to prevent inactivity pauses.
+app.get("/health/database", async (req, res) => {
+  try {
+    await waitlistService.checkDatabase();
+    return res.status(200).json({ application: "available", database: "available" });
+  } catch (error) {
+    console.error("[health] Supabase check failed", {
+      name: error.cause?.name || error.name,
+      code: error.cause?.code || error.cause?.cause?.code || error.code,
+      status: error.cause?.status || error.cause?.statusCode || error.status,
+    });
+    return res.status(503).json({ application: "available", database: "unavailable" });
+  }
 });
 
 // ==========================================
